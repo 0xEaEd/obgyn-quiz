@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Obstetric Medicine — Clinical Reasoning Quiz</title>
+<style>
+  :root{
+    --ink:#1c2b2d;
+    --paper:#f7f5f0;
+    --line:#d8d2c4;
+    --accent:#8a3b2b;
+    --accent-soft:#e7cfc5;
+    --good:#3f6f4f;
+    --good-soft:#dcecdf;
+    --bad:#a13d2f;
+    --bad-soft:#f3ddd6;
+    --card:#ffffff;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family: "Iowan Old Style","Palatino Linotype",Palatino,Georgia,serif;
+    line-height:1.5;
+  }
+  header{
+    padding:2.2rem 1.5rem 1.4rem;
+    border-bottom:1px solid var(--line);
+    text-align:center;
+  }
+  header h1{
+    font-size:1.5rem;
+    margin:0 0 .3rem;
+    font-weight:600;
+    letter-spacing:.01em;
+  }
+  header p{
+    margin:0;
+    color:#5b5a52;
+    font-size:.95rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+  }
+  main{
+    max-width:640px;
+    margin:0 auto;
+    padding:1.8rem 1.2rem 4rem;
+  }
+  #progress-row{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:.85rem;
+    color:#6b6a60;
+    margin-bottom:.5rem;
+  }
+  #bar-track{
+    height:4px;
+    background:var(--line);
+    border-radius:2px;
+    overflow:hidden;
+    margin-bottom:1.6rem;
+  }
+  #bar-fill{
+    height:100%;
+    background:var(--accent);
+    width:0%;
+    transition:width .35s ease;
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:1.8rem 1.6rem;
+  }
+  .qtag{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:.72rem;
+    color:var(--accent);
+    font-weight:600;
+    letter-spacing:.04em;
+    margin-bottom:.6rem;
+  }
+  .qtext{
+    font-size:1.15rem;
+    margin:0 0 1.4rem;
+  }
+  .opt{
+    display:flex;
+    gap:.7rem;
+    align-items:flex-start;
+    width:100%;
+    text-align:left;
+    background:var(--paper);
+    border:1px solid var(--line);
+    border-radius:5px;
+    padding:.75rem .9rem;
+    margin-bottom:.6rem;
+    cursor:pointer;
+    font:inherit;
+    font-size:.98rem;
+    color:var(--ink);
+    transition:border-color .15s ease, background .15s ease;
+  }
+  .opt:hover:not(:disabled){
+    border-color:var(--accent);
+  }
+  .opt:disabled{
+    cursor:default;
+  }
+  .opt .letter{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-weight:700;
+    font-size:.8rem;
+    color:#8a8878;
+    flex-shrink:0;
+    width:1.3rem;
+  }
+  .opt.correct{
+    background:var(--good-soft);
+    border-color:var(--good);
+  }
+  .opt.correct .letter{color:var(--good);}
+  .opt.wrong{
+    background:var(--bad-soft);
+    border-color:var(--bad);
+  }
+  .opt.wrong .letter{color:var(--bad);}
+  .feedback{
+    margin-top:1.2rem;
+    padding:1rem 1.1rem;
+    border-radius:5px;
+    font-size:.92rem;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    display:none;
+  }
+  .feedback.show{display:block;}
+  .feedback.right{background:var(--good-soft); color:#2b4a35;}
+  .feedback.wrong{background:var(--bad-soft); color:#6d2a1f;}
+  .feedback strong{display:block; margin-bottom:.2rem; font-size:.85rem;}
+  #nextBtn{
+    margin-top:1.4rem;
+    display:none;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:.7rem 1.4rem;
+    border-radius:5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:.92rem;
+    font-weight:600;
+    cursor:pointer;
+    float:right;
+  }
+  #nextBtn:hover{background:#733123;}
+  #nextBtn.show{display:inline-block;}
+  #results{
+    display:none;
+    text-align:center;
+    padding:2.5rem 1.5rem;
+  }
+  #results.show{display:block;}
+  #results .score{
+    font-size:3rem;
+    font-weight:700;
+    color:var(--accent);
+    margin-bottom:.2rem;
+  }
+  #results .scoreLabel{
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    color:#6b6a60;
+    margin-bottom:1.8rem;
+    font-size:.9rem;
+  }
+  #reviewList{
+    text-align:left;
+    margin-top:1.5rem;
+  }
+  .reviewItem{
+    border-bottom:1px solid var(--line);
+    padding:.9rem 0;
+    font-size:.92rem;
+  }
+  .reviewItem:last-child{border-bottom:none;}
+  .reviewItem .rq{margin:0 0 .35rem; font-weight:600;}
+  .reviewItem .rtag{
+    display:inline-block;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:.72rem;
+    font-weight:700;
+    letter-spacing:.03em;
+    padding:.1rem .5rem;
+    border-radius:3px;
+    margin-right:.5rem;
+  }
+  .rtag.ok{background:var(--good-soft); color:#2b4a35;}
+  .rtag.no{background:var(--bad-soft); color:#6d2a1f;}
+  #restartBtn{
+    margin-top:1rem;
+    background:transparent;
+    color:var(--accent);
+    border:1px solid var(--accent);
+    padding:.65rem 1.3rem;
+    border-radius:5px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    font-size:.9rem;
+    font-weight:600;
+    cursor:pointer;
+  }
+  #restartBtn:hover{background:var(--accent-soft);}
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Heart Disease, Diabetes &amp; Dermatological Disease in Pregnancy</h1>
+  <p>20 clinical reasoning questions</p>
+</header>
+
+<main>
+  <div id="quizArea">
+    <div id="progress-row">
+      <span id="progressText">Question 1 of 20</span>
+      <span id="scoreText">Score: 0</span>
+    </div>
+    <div id="bar-track"><div id="bar-fill"></div></div>
+
+    <div class="card">
+      <div class="qtag" id="sectionTag">SECTION</div>
+      <p class="qtext" id="qtext"></p>
+      <div id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <button id="nextBtn">Next →</button>
+    </div>
+  </div>
+
+  <div id="results">
+    <div class="score" id="finalScore"></div>
+    <div class="scoreLabel">out of 20 correct</div>
+    <button id="restartBtn">Retake quiz</button>
+    <div id="reviewList"></div>
+  </div>
+</main>
+
+<script>
+const questions = [
+{s:"Heart Disease", q:"A primigravida at 38 weeks with known rheumatic mitral stenosis develops sudden breathlessness and pink frothy sputum in the second stage of labour. Best explanation?",
+ o:["Amniotic fluid embolism","Acute pulmonary oedema from further CO rise and autotransfusion in second stage","Pulmonary embolism from immobility","Anaphylaxis to oxytocin"], c:1,
+ exp:"AFE is sudden and catastrophic with collapse/coagulopathy, not specific to mitral stenosis. Here, known mitral stenosis plus second-stage labour — the peak of CO surge and autotransfusion — points to acute pulmonary oedema from cardiac decompensation."},
+
+{s:"Heart Disease", q:"Why does cardiac risk in mitral stenosis rise sharply after 20 weeks and peak intra/immediately postpartum?",
+ o:["Progesterone-induced vasodilation peaks at 20 weeks","CO plateaus near its ~40% peak by 20 weeks, then labour/autotransfusion add further acute load","Fetal oxygen demand overwhelms maternal reserve after 20 weeks","Iron deficiency anaemia worsens after 20 weeks"], c:1,
+ exp:"Cardiac output rises from early pregnancy to reach ~40% above baseline by 20 weeks. Labour (especially second stage) and postpartum autotransfusion of uterine blood add further acute haemodynamic load on top of that plateau."},
+
+{s:"Heart Disease", q:"Mechanical mitral valve, presents at 8 weeks on warfarin. Best next step?",
+ o:["Continue warfarin throughout pregnancy","Switch to LMWH in 1st and 3rd trimester; warfarin acceptable in 2nd","Stop anticoagulation until 12 weeks","Switch to aspirin alone"], c:1,
+ exp:"Warfarin is avoided in the 1st trimester (teratogenicity) and 3rd trimester (fetal intracranial haemorrhage risk); LMWH is substituted in these windows."},
+
+{s:"Heart Disease", q:"Which finding in a woman with known peripartum cardiomyopathy at 34 weeks most suggests decompensation rather than normal pregnancy physiology?",
+ o:["Mild ankle oedema","Physiological systolic flow murmur","Orthopnoea with basal crepitations","Mild resting tachycardia to 90 bpm"], c:2,
+ exp:"Orthopnoea and basal crepitations reflect pulmonary congestion — a red flag for cardiac decompensation, unlike the mild oedema, flow murmurs, and slight tachycardia normal in pregnancy."},
+
+{s:"Heart Disease", q:"Eisenmenger syndrome in an unplanned pregnancy. Which statement best justifies its \"highest-risk\" classification?",
+ o:["It carries no maternal mortality risk, only fetal","Fixed pulmonary hypertension prevents the CO increase pregnancy demands, risking maternal death","It only becomes risky in the third trimester","Vaginal delivery eliminates the risk"], c:1,
+ exp:"Fixed pulmonary vascular resistance means the right heart cannot generate the increased cardiac output pregnancy requires, leading to high maternal mortality — this is why it sits in the highest-risk tier."},
+
+{s:"Heart Disease", q:"Why is trial of labour avoided and epidural preferred in significant cardiac disease?",
+ o:["Epidural increases cardiac preload beneficially","It blunts pain-driven sympathetic surges and Valsalva-related CO swings that stress the heart","Trial of labour is avoided purely to reduce infection risk","Epidural has no haemodynamic effect, it's just for comfort"], c:1,
+ exp:"Pain and pushing (Valsalva) cause sympathetic surges and abrupt CO/pressure swings; epidural analgesia blunts these, reducing cardiac stress."},
+
+{s:"Heart Disease", q:"Cardiac patient in labour, pulse persistently >110 bpm. Best immediate step?",
+ o:["Increase oxytocin infusion","Digitalize and manage as impending decompensation","Reassure — tachycardia is expected in labour","Administer ergometrine"], c:1,
+ exp:"Persistent tachycardia >110 bpm in a cardiac patient warrants digitalization per the deck's protocol — it signals the heart struggling to compensate, not a benign labour finding."},
+
+{s:"Diabetes", q:"Random glucose 190 mg/dl at 26 weeks. Best next step?",
+ o:["Diagnose overt diabetes immediately (threshold met)","Ignore — random glucose is unreliable in pregnancy","This doesn't meet overt-diabetes threshold (≥200); proceed to formal OGTT","Repeat random glucose in 4 weeks"], c:2,
+ exp:"The overt-diabetes random glucose threshold is ≥200 mg/dl. 190 falls short, so formal testing (OGTT per WHO criteria) is needed rather than an immediate diagnosis."},
+
+{s:"Diabetes", q:"Why can a well-controlled type 1 diabetic still have a severe hypoglycaemic episode despite rising insulin needs in later pregnancy?",
+ o:["Insulin needs actually fall steadily throughout pregnancy","Tighter glycaemic targets combined with fluctuating placental hormone effects narrow the safety margin","Hypoglycaemia risk disappears after the first trimester","Fetal glucose uptake stops in the third trimester"], c:1,
+ exp:"Pregnancy targets tight glycaemic control; combined with fluctuating anti-insulin placental hormone levels, the margin between good control and hypoglycaemia narrows, raising severe hypo risk even with rising insulin needs."},
+
+{s:"Diabetes", q:"Diabetic woman, HbA1c 10%, wants to conceive now. Best counsel?",
+ o:["Proceed — HbA1c doesn't affect malformation risk","Delay conception until glycaemic control improves, given the strong link between hyperglycaemia and congenital malformation","Conceive now and manage complications as they arise","HbA1c only matters in the third trimester"], c:1,
+ exp:"High periconceptional HbA1c is directly linked to congenital malformation risk (organogenesis occurs in early weeks), so control should be optimized before conception."},
+
+{s:"Diabetes", q:"Why must ACEI and statins be stopped preconception, distinct from why folic acid is continued to 12 weeks?",
+ o:["ACEI/statins are teratogenic; folic acid instead prevents neural tube defects — different mechanisms, both timing-critical in early pregnancy","All four drugs share the same teratogenic mechanism","ACEI/statins are stopped only for maternal comfort","Folic acid is stopped at the same time as ACEI/statins"], c:0,
+ exp:"ACEI and statins carry known teratogenic risk and are stopped before conception; folic acid is a protective supplement continued to 12 weeks specifically to prevent neural tube defects — opposite roles, same critical early window."},
+
+{s:"Diabetes", q:"GDM at 34 weeks: SFH above dates + polyhydramnios. Best explanation?",
+ o:["Unrelated coincidental findings","Fetal hyperinsulinaemia from maternal hyperglycaemia drives fetal growth (macrosomia) and fetal polyuria (polyhydramnios)","Maternal dehydration causing reduced fetal growth","Placental insufficiency causing IUGR"], c:1,
+ exp:"Maternal hyperglycaemia crosses the placenta, driving fetal hyperinsulinaemia — this promotes macrosomia (SFH above dates) and fetal polyuria, producing polyhydramnios."},
+
+{s:"Diabetes", q:"Well-controlled diabetic, no complications — delivery timing and pre-requisite if delivered before 38 weeks?",
+ o:["Deliver at 34 weeks regardless","Deliver at 39 weeks; if earlier, confirm fetal lung maturity (e.g., phosphatidylglycerol)","Deliver at 42 weeks to allow spontaneous labour","No lung maturity testing needed at any gestation"], c:1,
+ exp:"With good control and no complications, delivery is targeted at 39 weeks. Earlier delivery requires confirming fetal lung maturity, e.g. via phosphatidylglycerol testing."},
+
+{s:"Diabetes", q:"Rationale for IV dextrose/insulin sliding scale in active labour, and change immediately postpartum?",
+ o:["Maintains tight glycaemic control during high metabolic demand of labour; insulin needs drop ~50% postpartum with loss of placental hormones","Prevents maternal dehydration only","Insulin needs double immediately postpartum","Dextrose/insulin infusion is only for non-diabetic patients"], c:0,
+ exp:"Labour is metabolically demanding, so glucose is monitored hourly and insulin titrated to keep levels 3.5–5.1 mmol/l. Once the placenta (source of anti-insulin hormones) is delivered, insulin requirement falls sharply — typically by about half."},
+
+{s:"Dermatological Disease", q:"Primigravida, 36 weeks, pruritic papules on striae sparing umbilicus, spreading to thighs. Most likely diagnosis vs. key differentiator from PG?",
+ o:["Pemphigoid gestationis; distinguished by umbilical sparing","PEP; distinguished from PG by umbilical/periumbilical sparing and primigravid predominance","Prurigo of pregnancy; distinguished by pustules","Pruritic folliculitis; distinguished by trunk-only distribution"], c:1,
+ exp:"PEP classically begins on striae, spares the umbilicus, and is more common in primigravidae — key features that separate it from PG, which typically involves the umbilical area and can occur in any parity."},
+
+{s:"Dermatological Disease", q:"Prior PG, recurrence linked to postpartum COC use. Best explanation?",
+ o:["COC has no hormonal link to PG","PG is an autoimmune bullous disease with hormonal triggers; COC can provoke recurrence via similar mechanism to pregnancy hormones","COC recurrence is coincidental infection","PG never recurs in subsequent pregnancies"], c:1,
+ exp:"PG is autoimmune and hormonally influenced; hormonal exposure from COC use can trigger recurrence in a woman previously affected, similar to how pregnancy hormones drive the original episode."},
+
+{s:"Dermatological Disease", q:"Best distinguishing feature between PG and PEP most relevant to fetal counselling?",
+ o:["Both carry identical fetal risk","PG: positive direct immunofluorescence, fluctuating course, associated with preterm/SGA; PEP: DIF negative, self-limited, no adverse fetal outcome","PEP is diagnosed by immunofluorescence, PG is not","PEP is more dangerous to the fetus than PG"], c:1,
+ exp:"PG has positive direct immunofluorescence and is associated with preterm delivery and SGA babies; PEP is self-limited with no reported adverse fetal outcome — an important distinction for counselling."},
+
+{s:"Dermatological Disease", q:"28 weeks, follicular papules/pustules on trunk resembling acne. Best diagnosis and first-line treatment?",
+ o:["Bacterial folliculitis; oral antibiotics","Pruritic folliculitis of pregnancy; topical steroids","Acne vulgaris flare; oral retinoids","Impetigo; topical antibiotics"], c:1,
+ exp:"PFP presents with follicular papules/pustules mainly on the trunk, resembling acne, typically in the 2nd–3rd trimester. Topical steroid treatment is effective — oral retinoids are contraindicated in pregnancy."},
+
+{s:"Dermatological Disease", q:"Why does psoriasis improve in ~40% but worsen in ~20% of pregnancies, and why avoid methotrexate regardless?",
+ o:["Random variation with no biological basis; methotrexate avoided only due to cost","Pregnancy's Th1→Th2 immune shift favours improvement in many but not all; methotrexate is teratogenic regardless of maternal severity","Psoriasis always worsens in pregnancy; methotrexate is safe in pregnancy","Improvement is due to increased UV exposure only"], c:1,
+ exp:"The pregnancy-associated Th1→Th2 immune shift tends to favour improvement of Th1-driven conditions like psoriasis in many patients, though not universally. Methotrexate remains contraindicated due to teratogenicity regardless of how well or poorly the skin disease is controlled."},
+
+{s:"Dermatological Disease", q:"Late third trimester, pruritus with excoriated papules on extensor limbs, history of atopy. Most likely diagnosis and fetal outcome counsel?",
+ o:["Pemphigoid gestationis; counsel high SGA/preterm risk","Prurigo of pregnancy; reassure — no adverse maternal/fetal outcome expected","PEP; counsel high recurrence risk","Pruritic folliculitis; counsel neonatal skin involvement risk"], c:1,
+ exp:"Prurigo of pregnancy presents as excoriated papules on extensor limbs, is commoner with an atopy history, and resolves after delivery with no effect on mother or baby — reassurance is appropriate, unlike PG."}
+];
+
+let current = 0;
+let score = 0;
+let answers = [];
+
+const qtext = document.getElementById('qtext');
+const optionsEl = document.getElementById('options');
+const feedbackEl = document.getElementById('feedback');
+const nextBtn = document.getElementById('nextBtn');
+const progressText = document.getElementById('progressText');
+const scoreText = document.getElementById('scoreText');
+const barFill = document.getElementById('bar-fill');
+const sectionTag = document.getElementById('sectionTag');
+const quizArea = document.getElementById('quizArea');
+const resultsEl = document.getElementById('results');
+
+const letters = ['A','B','C','D'];
+
+function renderQuestion(){
+  const item = questions[current];
+  sectionTag.textContent = item.s.toUpperCase();
+  qtext.textContent = item.q;
+  progressText.textContent = `Question ${current+1} of ${questions.length}`;
+  scoreText.textContent = `Score: ${score}`;
+  barFill.style.width = `${(current/questions.length)*100}%`;
+  feedbackEl.className = 'feedback';
+  feedbackEl.textContent = '';
+  nextBtn.className = '';
+
+  optionsEl.innerHTML = '';
+  item.o.forEach((optText, idx) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt';
+    btn.innerHTML = `<span class="letter">${letters[idx]}</span><span>${optText}</span>`;
+    btn.addEventListener('click', () => selectAnswer(idx));
+    optionsEl.appendChild(btn);
+  });
+}
+
+function selectAnswer(idx){
+  const item = questions[current];
+  const optButtons = optionsEl.querySelectorAll('.opt');
+  optButtons.forEach(b => b.disabled = true);
+
+  const isCorrect = idx === item.c;
+  optButtons[idx].classList.add(isCorrect ? 'correct' : 'wrong');
+  if(!isCorrect){
+    optButtons[item.c].classList.add('correct');
+  }
+  if(isCorrect) score++;
+
+  answers.push({q: item.q, chosen: idx, correct: item.c, wasCorrect: isCorrect, exp: item.exp, options: item.o});
+
+  feedbackEl.classList.add('show', isCorrect ? 'right' : 'wrong');
+  feedbackEl.innerHTML = `<strong>${isCorrect ? 'Correct' : 'Not quite'}</strong>${item.exp}`;
+
+  scoreText.textContent = `Score: ${score}`;
+  nextBtn.classList.add('show');
+  nextBtn.textContent = current === questions.length - 1 ? 'See results →' : 'Next →';
+}
+
+nextBtn.addEventListener('click', () => {
+  current++;
+  if(current < questions.length){
+    renderQuestion();
+  } else {
+    showResults();
+  }
+});
+
+function showResults(){
+  quizArea.style.display = 'none';
+  resultsEl.classList.add('show');
+  document.getElementById('finalScore').textContent = `${score}/20`;
+
+  const reviewList = document.getElementById('reviewList');
+  reviewList.innerHTML = '';
+  answers.forEach((a, i) => {
+    const div = document.createElement('div');
+    div.className = 'reviewItem';
+    div.innerHTML = `
+      <span class="rtag ${a.wasCorrect ? 'ok' : 'no'}">${a.wasCorrect ? 'CORRECT' : 'MISSED'}</span>
+      <p class="rq">Q${i+1}. ${a.q}</p>
+      <p style="margin:.2rem 0 0; color:#5b5a52;">${a.exp}</p>
+    `;
+    reviewList.appendChild(div);
+  });
+}
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+  current = 0;
+  score = 0;
+  answers = [];
+  resultsEl.classList.remove('show');
+  quizArea.style.display = 'block';
+  renderQuestion();
+});
+
+renderQuestion();
+</script>
+
+</body>
+</html>
